@@ -16,11 +16,11 @@ def _cmd(cmdline):
     return ret
 
 
-def test_cli_help()
+def test_cli_help():
     out = _cmd('txtrader_monitor --help')
-    assert out == 'true'
+    assert out
 
 
-def test_cli_run()
+def test_cli_run():
     out = _cmd('txtrader_monitor')
-    assert out == 'true'
+    assert out

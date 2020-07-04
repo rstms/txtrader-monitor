@@ -34,7 +34,7 @@ setup(
     tests_require=['pytest', 'tox', 'yapf', 'twine', 'wheel', 'pybump'],
     entry_points={
         'console_scripts': [
-            'txtrader_monitor=txtrader.monitor:txtrader_monitor',
+            'txtrader_monitor=txtrader_monitor:txtrader_monitor',
         ],
     },
 )

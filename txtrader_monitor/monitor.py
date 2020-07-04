@@ -11,12 +11,14 @@
 
 """
 
+import os
 import click
 import time
+#from types import *
 from twisted.internet import reactor, protocol, task, error
 from twisted.protocols.basic import NetstringReceiver
-from txtrader.config import Config
 
+from txtrader_monitor.version import VERSION
 
 class Monitor(object):
 
@@ -28,11 +30,10 @@ class Monitor(object):
             and function(data) is the callback that will receive event data
             callbacks must return True to continue monitor.run() loop
         """
-        config = Config()
-        self.host = host or config.get('HOST')
-        self.port = port or config.get('TCP_PORT')
-        self.user = user or config.get('USERNAME')
-        self.password = password or config.get('PASSWORD')
+        self.host = host or os.environ['TXTRADER_HOST']
+        self.port = int(port) or int(os.environ['TXTRADER_TCP_PORT'])
+        self.user = user or os.environ['TXTRADER_USERNAME']
+        self.password = password or os.environ['TXTRADER_PASSWORD']
         self.shutdown_pending = False
         self.channel = ''
         self.callback_types = ['status', 'error', 'time', 'order', 'execution', 'quote', 'trade', 'tick', 'shutdown']
@@ -79,6 +80,10 @@ class Monitor(object):
             if cb_type in self.callbacks.keys():
                 if not self.callbacks[cb_type](cb_type, cb_data):
                     reactor.callFromThread(reactor.stop)
+
+    def shutdown(self, reason):
+        self.connection.channel.send(f'shutdown {reason}')
+
 
     def _cb_print(self, label, msg):
         print('%s: %s' % (label, repr(msg)))
@@ -162,11 +167,11 @@ class StatusClientFactory(protocol.ClientFactory):
             except error.ReactorNotRunning:
                 pass
 
-
 @click.command('txtrader_monitor', short_help='output txtrader updates')
 @click.option('--host', default=None, envvar='TXTRADER_HOST')
-@click.option('--port', default=None, envvar='TXTRADER_TCP_PORT')
+@click.option('--port', type=int, default=None, envvar='TXTRADER_TCP_PORT')
 @click.option('--username', default=None, envvar='TXTRADER_USERNAME')
 @click.option('--password', default=None, envvar='TXTRADER_PASSWORD')
 def txtrader_monitor(host, port, username, password):
     Monitor(host, port, username, password).run()
+

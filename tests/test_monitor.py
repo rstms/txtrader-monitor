@@ -17,3 +17,16 @@ def test_init(monitor):
 def test_run(monitor):
     monitor.run()
     assert monitor
+
+
+def _execution(self, data):
+    print(f'RX: {data}')
+    count += 1
+    return count <= 3
+
+
+count=0
+
+def test_module():
+    Monitor(callbacks={'execution':_execution}).run()
+    assert count == 3

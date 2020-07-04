@@ -18,9 +18,10 @@ help:
 tools: 
 	${PYTHON} -m pip install --upgrade setuptools wheel twine tox pytest pybump
 
+TPARM:=-svvx
 test:
 	@echo Testing...
-	pytest -vvx $(TPARM)
+	pytest $(TPARM)
 
 install:
 	@echo Installing ${PROJECT} locally
