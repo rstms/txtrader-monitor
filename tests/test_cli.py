@@ -12,15 +12,10 @@ def _cmd(cmdline):
     except CalledProcessError as cpe:
         print(repr(cpe))
         print(f'output={cpe.output}')
-        raise(cpe)
+        raise (cpe)
     return ret
 
 
 def test_cli_help():
     out = _cmd('txtrader_monitor --help')
-    assert out
-
-
-def test_cli_run():
-    out = _cmd('txtrader_monitor')
     assert out
