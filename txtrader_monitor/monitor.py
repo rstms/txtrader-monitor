@@ -331,10 +331,10 @@ class StatusClientFactory(ReconnectingClientFactory):
 
 
 @click.command('txtrader_monitor', short_help='output txtrader updates')
-@click.option('--host', default=None, envvar='TXTRADER_HOST')
-@click.option('--port', type=int, default=None, envvar='TXTRADER_TCP_PORT')
-@click.option('--username', default=None, envvar='TXTRADER_USERNAME')
-@click.option('--password', default=None, envvar='TXTRADER_PASSWORD')
+@click.option('--host', default='localhost', envvar='TXTRADER_HOST')
+@click.option('--port', type=int, default=50090, envvar='TXTRADER_TCP_PORT')
+@click.option('--username', default='txtrader_user', envvar='TXTRADER_USERNAME')
+@click.option('--password', default='change_this_password', envvar='TXTRADER_PASSWORD')
 @click.option('-l', '--log_level', type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'], case_sensitive=False), default='WARNING', envvar='LOG_LEVEL')
 def txtrader_monitor(host, port, username, password, log_level):
     Monitor(host, port, username, password, log_level=log_level).run()
