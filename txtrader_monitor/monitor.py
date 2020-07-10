@@ -336,5 +336,6 @@ class StatusClientFactory(ReconnectingClientFactory):
 @click.option('--username', default='txtrader_user', envvar='TXTRADER_USERNAME')
 @click.option('--password', default='change_this_password', envvar='TXTRADER_PASSWORD')
 @click.option('-l', '--log_level', type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'], case_sensitive=False), default='WARNING', envvar='LOG_LEVEL')
+@click.version_option(VERSION)
 def txtrader_monitor(host, port, username, password, log_level):
     Monitor(host, port, username, password, log_level=log_level).run()
