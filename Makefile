@@ -21,7 +21,7 @@ tools:
 TPARM:=-svvx
 test:
 	@echo Testing...
-	pytest $(TPARM)
+	find tests -name 'test_*.py' | xargs -n 1 pytest $(TPARM)
 
 install:
 	@echo Installing ${PROJECT} locally

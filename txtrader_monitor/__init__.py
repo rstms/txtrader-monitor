@@ -1,1 +1,1 @@
-from .monitor import Monitor, txtrader_monitor
+from .monitor import Monitor, txtrader_monitor, CHANNELS

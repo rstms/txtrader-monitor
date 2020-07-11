@@ -1,0 +1,11 @@
+[style]
+column_limit = 135
+based_on_style = pep8
+SPLIT_BEFORE_FIRST_ARGUMENT = true
+indent_width = 4
+split_before_logical_operator = true
+SPLIT_BEFORE_DOT = true
+BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF = true
+DEDENT_CLOSING_BRACKETS = true
+SPLIT_COMPLEX_COMPREHENSION = true
+ALLOW_SPLIT_BEFORE_DICT_VALUE = false
