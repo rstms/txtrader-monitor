@@ -240,7 +240,7 @@ class Monitor(object):
     def stop(self):
         try:
             if reactor.running:
-                reactor.stop()
+                reactor.callLater(0, reactor.stop)
         except ReactorNotRunning:
             pass
 

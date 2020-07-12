@@ -8,13 +8,13 @@ from txtrader_monitor import Monitor
 
 m = Monitor(log_level='WARNING')
 
-ex = []
+ex = None
 
 
 def _executions(channel, data):
     global ex
     #print(f'{channel}: {data}')
-    ex.append(json.loads(data))
+    ex = (json.loads(data))
     return False
 
 
@@ -29,10 +29,6 @@ def test_run_query_executions():
     global ex
     m.set_callback('STATUS', _status)
     m.set_callback('EXECUTIONS', _executions)
-    try:
-        m.run()
-    except Exception as ex:
-        assert False, ex
-    assert ex
-
+    m.run()
+    assert ex != None
     pprint(ex)

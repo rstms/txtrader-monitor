@@ -14,7 +14,7 @@ def _orders(channel, data):
     global ret
     print(f'{channel}: {data}')
     ret = json.loads(data)
-    return False
+    return False 
 
 
 def _status(channel, msg):
@@ -28,5 +28,5 @@ def test_orders():
     m.set_callback('STATUS', _status)
     m.set_callback('ORDERS', _orders)
     m.run()
-    assert ret
+    assert ret != None
     pprint(ret)
