@@ -38,6 +38,10 @@ fmt:
 gitclean: 
 	$(if $(shell git status --porcelain), $(error "git status dirty, commit and push first"))
 
+willbump: gitclean ${SOURCES}
+	echo 'would bump: $<'
+
+
 # bump version in VERSION and in python source
 VERSION: gitclean ${SOURCES}
 	# If VERSION=major|minor or sources have changed, bump corresponding version element
