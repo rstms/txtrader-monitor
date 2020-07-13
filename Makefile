@@ -79,6 +79,8 @@ publish: release
 	docker login
 	docker build . --tag ${ORG}/${PROJECT}:$$(cat VERSION)
 	docker push ${ORG}/${PROJECT}:$$(cat VERSION)
+	docker build . --tag ${ORG}/${PROJECT}:latest
+	docker push ${ORG}/${PROJECT}:latest
 
 # remove all temporary files
 clean:
