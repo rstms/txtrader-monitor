@@ -1,5 +1,6 @@
 # pypi deploy Makefile
 
+ORG:=rstms
 PROJECT:=$(shell basename `pwd` | tr - _)
 
 PYTHON=python3
@@ -75,6 +76,9 @@ publish: release
 	$(if $(wildcard ~/.pypirc),,$(error publish failed; ~/.pypirc required))
 	@echo publishing ${PROJECT} `cat VERSION` to PyPI...
 	${PYTHON} -m twine upload dist/*
+	docker login
+	docker build . --tag:${ORG}/${PROJECT}:$$(cat VERSION)
+	docker push ${ORG}/${PROJECT}:$$(cat VERSION)
 
 # remove all temporary files
 clean:
@@ -82,3 +86,4 @@ clean:
 	rm -rf build dist ./*.egg-info .pytest_cache .tox
 	find . -type d -name __pycache__ | xargs rm -rf
 	find . -name '*.pyc' | xargs rm -f
+
