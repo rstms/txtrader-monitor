@@ -30,7 +30,8 @@ setup(
         "Operating System :: OS Independent",
         "Environment :: Console",
     ],
-    install_requires=['twisted', 'click', 'ujson'],
+    python_requires='>=3.7',
+    install_requires=['twisted>=20.3.0', 'click>=7.1.2', 'ujson>=3.0.0'],
     tests_require=['pytest', 'tox', 'yapf', 'twine', 'wheel', 'pybump'],
     entry_points={
         'console_scripts': [
