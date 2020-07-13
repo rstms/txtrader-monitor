@@ -73,7 +73,7 @@ release: dist
 	TAG="v`cat VERSION`"; git tag -a $$TAG -m "Release $$TAG"; git push origin $$TAG
 
 # ~/.pypirc must be defined if publishing to PyPI
-publish: clean release
+publish: release
 	$(if $(wildcard ~/.pypirc),,$(error publish failed; ~/.pypirc required))
 	@echo publishing ${PROJECT} `cat VERSION` to PyPI...
 	${PYTHON} -m twine upload dist/*
