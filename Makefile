@@ -72,15 +72,15 @@ release: dist
 	TAG="v`cat VERSION`"; git tag -a $$TAG -m "Release $$TAG"; git push origin $$TAG
 
 # ~/.pypirc must be defined if publishing to PyPI
-publish: release
+publish: clean release
 	$(if $(wildcard ~/.pypirc),,$(error publish failed; ~/.pypirc required))
 	@echo publishing ${PROJECT} `cat VERSION` to PyPI...
 	${PYTHON} -m twine upload dist/*
 	docker images | awk '/^${ORG}\/${PROJECT}/{print $3}' | xargs -r -n 1 docker rmi -f
-	docker build . --tag ${ORG}/${PROJECT}:$$(cat VERSION)
+	docker build . --tag ${ORG}/${PROJECT}:$(shell cat VERSION)
 	docker build . --tag ${ORG}/${PROJECT}:latest
 	docker login
-	docker push ${ORG}/${PROJECT}:$$(cat VERSION)
+	docker push ${ORG}/${PROJECT}:$(shell cat VERSION)
 	docker push ${ORG}/${PROJECT}:latest
 
 # remove all temporary files
