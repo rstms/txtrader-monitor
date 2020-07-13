@@ -38,7 +38,7 @@ fmt:
 gitclean: 
 	$(if $(shell git status --porcelain), $(error "git status dirty, commit and push first"))
 
-willbump: gitclean ${SOURCES}
+#VERSION: gitclean ${SOURCES}
 	echo 'would bump: $?'
 
 
