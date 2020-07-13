@@ -77,7 +77,7 @@ publish: release
 	@echo publishing ${PROJECT} `cat VERSION` to PyPI...
 	${PYTHON} -m twine upload dist/*
 	docker login
-	docker build . --tag:${ORG}/${PROJECT}:$$(cat VERSION)
+	docker build . --tag ${ORG}/${PROJECT}:$$(cat VERSION)
 	docker push ${ORG}/${PROJECT}:$$(cat VERSION)
 
 # remove all temporary files
