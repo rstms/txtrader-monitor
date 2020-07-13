@@ -57,8 +57,8 @@ VERSION: gitclean ${SOURCES}
 	  echo "Committing version update..."; \
 	  git add VERSION ${PROJECT}/version.py; \
 	  git commit -m "bumped version to `cat VERSION`"; \
-	  git push; \
 	fi
+	  #git push; \
 
 # create distributable files
 dist: VERSION 
