@@ -5,7 +5,11 @@ from pprint import pprint
 
 def main():
 
-    m = Monitor()
+    options={
+        'execution-notifications': 1,
+        'execution-data': 1
+    }
+    m = Monitor(options=options)
 
     def execution(channel, data):
         print(f"{channel} {data}")
@@ -21,13 +25,14 @@ def main():
         return True
 
     def status(channel, data):
+        print(f"{channel} {data}")
         if data.startswith('.Authorized'):
             m.send('executions')
         return True
 
-            #'*': None,
     m.set_callbacks(
         callbacks={
+            '*': None,
             'STATUS': status,
             'EXECUTION': execution,
             'EXECUTIONS': executions,

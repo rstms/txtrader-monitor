@@ -46,7 +46,7 @@ class Monitor(object):
         password: str = '',
         options: dict = {},
         callbacks: dict = {},
-        log_level: str = 'WARN',
+        log_level: str = 'WARNING',
     ):
         """Initialize Monitor:
           connection parameters: host, port, username, password, 
@@ -240,7 +240,7 @@ class Monitor(object):
     def stop(self):
         try:
             if reactor.running:
-                reactor.callLater(0, reactor.stop)
+                reactor.stop()
         except ReactorNotRunning:
             pass
 
@@ -299,12 +299,14 @@ class StatusClient(NetstringReceiver):
                     '%s.time: ' % self.channel: Channel.TIME,
                     '%s.error: ' % self.channel: Channel.ERROR,
                     '%s.order.' % self.channel: Channel.ORDER,
+                    '%s.order-data ' % self.channel: Channel.ORDER_DATA,
                     '%s.orders: ' % self.channel: Channel.ORDERS,
                     '%s.ticket.' % self.channel: Channel.TICKET,
+                    '%s.ticket-data ' % self.channel: Channel.TICKET_DATA,
                     '%s.open-order.' % self.channel: Channel.ORDER,
                     '%s.execution.' % self.channel: Channel.EXECUTION,
                     '%s.executions: ' % self.channel: Channel.EXECUTIONS,
-                    '%s.execution-data: ' % self.channel: Channel.EXECUTION_DATA,
+                    '%s.execution-data ' % self.channel: Channel.EXECUTION_DATA,
                     '%s.symbol: ' % self.channel: Channel.SYMBOL,
                     '%s.symbol-data: ' % self.channel: Channel.SYMBOL_DATA,
                     '%s.quote.' % self.channel: Channel.QUOTE,
@@ -374,7 +376,7 @@ class StatusClientFactory(ReconnectingClientFactory):
 @click.option('-p', '--port', type=int, default=50090, envvar='TXTRADER_TCP_PORT')
 @click.option('-u', '--username', default='txtrader_user', envvar='TXTRADER_USERNAME')
 @click.option('-P', '--password', default='change_this_password', envvar='TXTRADER_PASSWORD')
-@click.option('--options', type=str, default='{}', envvar='TXTRADER_OPTIONS')
+@click.option('--options', type=str, default='{"order-notification":1,"execution-notification":1}', envvar='TXTRADER_OPTIONS')
 @click.option('--version', type=str, default='{}', envvar='TXTRADER_OPTIONS')
 @click.option(
     '-l',
@@ -386,4 +388,4 @@ class StatusClientFactory(ReconnectingClientFactory):
 @click.version_option(VERSION)
 def txtrader_monitor(host, port, username, password, options, log_level, version):
     options = json.loads(options)
-    Monitor(host, port, username, password, options, callbacks={}, log_level=log_level).run()
+    Monitor(host, port, username, password, options=options, callbacks={}, log_level=log_level).run()

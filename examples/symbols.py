@@ -4,25 +4,25 @@ from pprint import pprint
 
 options = {'symbol': 'MSFT', 'query_sent': False, 'querydata_sent': False}
 
-m = Monitor(log_level='INFO')
+m = Monitor(log_level='WARNING')
 
 
 def symbol(channel, data):
     result = json.loads(data)
     pprint(json.loads(data))
+    symbol = options['symbol']
     if not options['query_sent']:
         options['query_sent'] = True
-        m.send(f"query {options['symbol']}")
+        m.send(f"query {symbol}")
     elif not options['querydata_sent']:
         options['querydata_sent'] = True
-        m.send(f"querydata {options['symbol']}")
+        m.send(f"querydata {symbol}")
     return True
 
 
 def symbol_data(channel, data):
     pprint(json.loads(data))
-    return True
-
+    return False 
 
 def status(channel, data):
     print(f"{channel}: {data}")
