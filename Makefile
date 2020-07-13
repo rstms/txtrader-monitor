@@ -47,6 +47,8 @@ VERSION: gitclean ${SOURCES}
 	# If VERSION=major|minor or sources have changed, bump corresponding version element
 	# and commit after testing for any other uncommitted changes.
 	#
+	@/bin/echo newer files: $?
+	exit 1
 	pybump bump --file VERSION --level $(if ${VERSION},${VERSION},'patch')
 	@/bin/echo -e >${PROJECT}/version.py "DATE='$$(date +%Y-%m-%d)'\nTIME='$$(date +%H:%M:%S)'\nVERSION='$$(cat VERSION)'"
 	@echo "Version bumped to `cat VERSION`"
