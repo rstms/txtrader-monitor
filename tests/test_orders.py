@@ -14,7 +14,7 @@ def _orders(channel, data):
     global ret
     print(f'{channel}: {data}')
     ret = json.loads(data)
-    return False 
+    return False
 
 
 def _status(channel, msg):

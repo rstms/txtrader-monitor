@@ -61,7 +61,9 @@ class Monitor(object):
         """
 
         logging.basicConfig(
-            stream=sys.stderr, level=log_level, format="[%(asctime)s] {%(filename)s:%(lineno)d} %(levelname)s - %(message)s"
+            stream=sys.stderr,
+            level=log_level,
+            format="[%(asctime)s] {%(filename)s:%(lineno)d} %(levelname)s - %(message)s"
         )
         logger = logging.getLogger(self.__class__.__name__)
 
@@ -376,7 +378,9 @@ class StatusClientFactory(ReconnectingClientFactory):
 @click.option('-p', '--port', type=int, default=50090, envvar='TXTRADER_TCP_PORT')
 @click.option('-u', '--username', default='txtrader_user', envvar='TXTRADER_USERNAME')
 @click.option('-P', '--password', default='change_this_password', envvar='TXTRADER_PASSWORD')
-@click.option('--options', type=str, default='{"order-notification":1,"execution-notification":1}', envvar='TXTRADER_OPTIONS')
+@click.option(
+    '--options', type=str, default='{"order-notification":1,"execution-notification":1}', envvar='TXTRADER_OPTIONS'
+)
 @click.option('--version', type=str, default='{}', envvar='TXTRADER_OPTIONS')
 @click.option(
     '-l',

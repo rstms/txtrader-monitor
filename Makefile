@@ -6,7 +6,7 @@ PYTHON=python3
 
 
 # find all python sources (used to determine when to bump build number)
-SOURCES:=$(shell find setup.py Makefile ${PROJECT} tests -name '*.py' | grep -v version.py)
+SOURCES:=Makefile tox.ini README.md setup.cfg $(shell find setup.py ${PROJECT} tests examples -name '*.py' | grep -v version.py)
 
 # if VERSION=major or VERSION=minor specified, be sure a version bump will happen
 $(if ${VERSION},$(shell touch ${PROJECT}/version.py))
@@ -38,17 +38,15 @@ fmt:
 gitclean: 
 	$(if $(shell git status --porcelain), $(error "git status dirty, commit and push first"))
 
-#VERSION: gitclean ${SOURCES}
-	echo 'would bump: $?'
 
+version: VERSION
 
 # bump version in VERSION and in python source
-VERSION: gitclean ${SOURCES}
+VERSION: ${SOURCES}
 	# If VERSION=major|minor or sources have changed, bump corresponding version element
 	# and commit after testing for any other uncommitted changes.
 	#
-	@/bin/echo newer files: $?
-	exit 1
+	@echo Changed files: $?
 	pybump bump --file VERSION --level $(if ${VERSION},${VERSION},'patch')
 	@/bin/echo -e >${PROJECT}/version.py "DATE='$$(date +%Y-%m-%d)'\nTIME='$$(date +%H:%M:%S)'\nVERSION='$$(cat VERSION)'"
 	@echo "Version bumped to `cat VERSION`"
@@ -60,7 +58,6 @@ VERSION: gitclean ${SOURCES}
 	  git add VERSION ${PROJECT}/version.py; \
 	  git commit -m "bumped version to `cat VERSION`"; \
 	fi
-	  #git push; \
 
 # create distributable files
 dist: VERSION 

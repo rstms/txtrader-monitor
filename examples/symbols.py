@@ -22,7 +22,8 @@ def symbol(channel, data):
 
 def symbol_data(channel, data):
     pprint(json.loads(data))
-    return False 
+    return False
+
 
 def status(channel, data):
     print(f"{channel}: {data}")

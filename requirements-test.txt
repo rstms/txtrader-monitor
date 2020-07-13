@@ -1,6 +1,0 @@
-pytest
-tox
-yapf
-twine
-wheel
-pybump
