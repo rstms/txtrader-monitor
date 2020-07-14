@@ -2,12 +2,14 @@
 
 ORG:=rstms
 PROJECT:=$(shell basename `pwd` | tr - _)
+PROJECT_NAME:=$(shell basename `pwd`)
 
 PYTHON=python3
 
-
 # find all python sources (used to determine when to bump build number)
-SOURCES:=Makefile tox.ini README.md setup.cfg $(shell find setup.py ${PROJECT} tests examples -name '*.py' | grep -v version.py)
+PYTHON_SOURCES:=$(shell find setup.py ${PROJECT} tests examples -name '*.py')
+OTHER_SOURCES:=Makefile Dockerfile setup.py setup.cfg tox.ini README.md LICENSE .gitignore .style.yapf
+SOURCES:=${PYTHON_SOURCES} ${OTHER_SOURCES}
 
 # if VERSION=major or VERSION=minor specified, be sure a version bump will happen
 $(if ${VERSION},$(shell touch ${PROJECT}/version.py))
@@ -17,9 +19,9 @@ help:
 
 # install python modules for development and testing
 tools: 
-	${PYTHON} -m pip install --upgrade setuptools wheel twine tox pytest pybump yapf
+	${PYTHON} -m pip install --upgrade setuptools pybump pytest tox twine wheel yapf
 
-TPARM:=-svvx
+TPARM:=-vvx
 test:
 	@echo Testing...
 	find tests -name 'test_*.py' | xargs -n 1 pytest $(TPARM)
@@ -32,62 +34,82 @@ uninstall:
 	@echo Uninstalling ${PROJECT} locally
 	${PYTHON} -m pip uninstall -y ${PROJECT} 
 
-fmt:
-	find . -type f | grep .py$$ | egrep -v .git\|.tox\|.pytest_cache | xargs -n 1 yapf -i -vv
-
 # ensure no uncommitted changes exist
 gitclean: 
 	$(if $(shell git status --porcelain), $(error "git status dirty, commit and push first"))
 
+# yapf format all changed python sources
+fmt: .fmt  
+.fmt: ${PYTHON_SOURCES}
+	@$(foreach s,$?,yapf -i -vv ${s};) 
+	@touch $@
 
+# bump version in VERSION and in python source if source files have changed since last version bump
 version: VERSION
-
-# bump version in VERSION and in python source
 VERSION: ${SOURCES}
+	@echo Changed files: $?
 	# If VERSION=major|minor or sources have changed, bump corresponding version element
 	# and commit after testing for any other uncommitted changes.
 	#
-	@echo Changed files: $?
-	pybump bump --file VERSION --level $(if ${VERSION},${VERSION},'patch')
+	@pybump bump --file VERSION --level $(if ${VERSION},${VERSION},'patch')
 	@/bin/echo -e >${PROJECT}/version.py "DATE='$$(date +%Y-%m-%d)'\nTIME='$$(date +%H:%M:%S)'\nVERSION='$$(cat VERSION)'"
 	@echo "Version bumped to `cat VERSION`"
-	@EXPECTED_STATUS=$$(/bin/echo -e " M VERSION\n M ${PROJECT}/version.py");\
-        if [ "`git status --porcelain`" != "$$EXPECTED_STATUS" ]; then \
-	  echo "git state is dirty, not committing version update."; exit 1; \
-	else \
-	  echo "Committing version update..."; \
-	  git add VERSION ${PROJECT}/version.py; \
-	  git commit -m "bumped version to `cat VERSION`"; \
-	  git push; \
-	fi
+	@touch $@
 
-# create distributable files
-dist: VERSION 
+# test with tox if sources have changed
+.PHONY: tox
+tox: .tox
+.tox: ${SOURCES} VERSION
+	@echo Changed files: $?
 	TOX_TESTENV_PASSENV="TXTRADER_HOST TXTRADER_TCP_PORT TXTRADER_USERNAME TXTRADER_PASSWORD" tox
-	@echo building ${PROJECT}
+	@touch $@
+
+# create distributable files if sources have changed
+dist: .dist
+.dist:	${SOURCES} .tox
+	@echo Changed files: $?
+	@echo Building ${PROJECT}
 	${PYTHON} setup.py sdist bdist_wheel
+	@touch $@
 
 # set a git release tag and push it to github
-release: dist
+release: gitclean .dist 
 	@echo pushing Release ${PROJECT} v`cat VERSION` to github...
 	TAG="v`cat VERSION`"; git tag -a $$TAG -m "Release $$TAG"; git push origin $$TAG
 
-# ~/.pypirc must be defined if publishing to PyPI
-publish: release
+LOCAL_VERSION=$(shell cat VERSION)
+PYPI_VERSION=$(shell pip search txtrader|awk '/txtrader-client/{print substr($$2,2,length($$2)-2)}')
+
+pypi: release
 	$(if $(wildcard ~/.pypirc),,$(error publish failed; ~/.pypirc required))
-	@echo publishing ${PROJECT} `cat VERSION` to PyPI...
-	${PYTHON} -m twine upload dist/*
-	docker images | awk '/^${ORG}\/${PROJECT}/{print $3}' | xargs -r -n 1 docker rmi -f
-	docker build . --tag ${ORG}/${PROJECT}:$(shell cat VERSION)
-	docker build . --tag ${ORG}/${PROJECT}:latest
+	@if [ "${LOCAL_VERSION}" != "${PYPI_VERSION}" ]; then \
+	  echo publishing ${PROJECT} `cat VERSION` to PyPI...;\
+	  ${PYTHON} -m twine upload dist/*;\
+	else \
+	  echo ${PROJECT} ${LOCAL_VERSION} is up-to-date on PyPI;\
+	fi
+
+docker: .docker
+.docker: pypi
+	@echo building docker image
+	docker images | awk '/^${ORG}\/${PROJECT_NAME}/{print $$3}' | xargs -r -n 1 docker rmi -f
+	docker build . --tag ${ORG}/${PROJECT_NAME}:$(shell cat VERSION)
+	docker build . --tag ${ORG}/${PROJECT_NAME}:latest
+	@touch $@
+
+dockerhub: .dockerhub
+.dockerhub: .docker 
+	$(if $(wildcard ~/.docker/config.json),,$(error docker-publish failed; ~/.docker/config.json required))
+	@echo pushing images to dockerhub
 	docker login
-	docker push ${ORG}/${PROJECT}:$(shell cat VERSION)
-	docker push ${ORG}/${PROJECT}:latest
+	docker push ${ORG}/${PROJECT_NAME}:$(shell cat VERSION)
+	docker push ${ORG}/${PROJECT_NAME}:latest
+
+publish: .dockerhub
 
 # remove all temporary files
 clean:
 	@echo Cleaning up...
-	rm -rf build dist ./*.egg-info .pytest_cache .tox
+	rm -rf build dist .dist ./*.egg-info .pytest_cache .tox
 	find . -type d -name __pycache__ | xargs rm -rf
 	find . -name '*.pyc' | xargs rm -f
-

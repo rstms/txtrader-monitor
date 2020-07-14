@@ -1,4 +1,4 @@
 FROM python:3.8.3-buster
-MAINTAINER mkrueger@rstms.net
-RUN pip install -U txtrader-monitor
-CMD txtrader_monitor
+label maintainer="mkrueger@rstms.net"
+RUN pip install --upgrade txtrader-client
+ENTRYPOINT [ "/usr/local/bin/txtrader_monitor" ]
