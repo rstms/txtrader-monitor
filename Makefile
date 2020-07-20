@@ -78,7 +78,7 @@ release: gitclean .dist
 	TAG="v`cat VERSION`"; git tag -a $$TAG -m "Release $$TAG"; git push origin $$TAG
 
 LOCAL_VERSION=$(shell cat VERSION)
-PYPI_VERSION=$(shell pip search txtrader|awk '/txtrader-client/{print substr($$2,2,length($$2)-2)}')
+PYPI_VERSION=$(shell pip search txtrader|awk '/${PROJECT_NAME}/{print substr($$2,2,length($$2)-2)}')
 
 pypi: release
 	$(if $(wildcard ~/.pypirc),,$(error publish failed; ~/.pypirc required))
