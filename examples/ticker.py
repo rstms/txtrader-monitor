@@ -2,38 +2,30 @@ from txtrader_monitor import Monitor
 import json
 from pprint import pprint
 
-options={'order-notification':1, 'order-data':1}
-m = Monitor(options=options, log_level='WARNING')
+m = Monitor(log_level='WARNING')
 
 def status(channel, data):
     print(f"{channel}: {data}")
     if data.startswith('.Authorized'):
-        m.send(f"orders")
+        pass
     return True
 
-
-def orders(channel, data):
+def ticker(channel, data):
     print(f"{channel}: {data}")
     return True
 
-
-def order(channel, data):
+def timer(channel, data):
     print(f"{channel}: {data}")
     return True
-
-def order_data(channel, data):
-    print(f"{channel}: {data}")
-    return True
-
 
 def main():
     m.set_callbacks(callbacks={
         '*': None,
+        'TICK': ticker,
+        'TIME': timer,
         'STATUS': status,
-        'ORDER': order,
-        'ORDERS': orders,
-        'ORDER_DATA': order_data,
     })
+    m.set_tick_interval(5)
     m.run()
 
 
