@@ -2,6 +2,7 @@ from txtrader_monitor import Monitor
 import json
 from pprint import pprint
 
+
 def main():
 
     options = {'execution-notification': 1, 'execution-data': 1}

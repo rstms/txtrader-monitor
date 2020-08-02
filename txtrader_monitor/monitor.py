@@ -35,15 +35,20 @@ from txtrader_monitor.connection_state import ConnectionState
 
 CHANNELS = ALL_CHANNELS
 
+DEFAULT_TXTRADER_HOST = 'localhost'
+DEFAULT_TXTRADER_TCP_PORT = 50090
+DEFAULT_TXTRADER_USERNAME = 'txtrader_user'
+DEFAULT_TXTRADER_PASSWORD = 'change_this_password'
+
 
 class Monitor(object):
 
     def __init__(
         self,
-        host: str = 'localhost',
-        port: str = '50090',
-        username: str = 'txtrader_user',
-        password: str = 'change_this_password',
+        host: str = DEFAULT_TXTRADER_HOST,
+        port: int = DEFAULT_TXTRADER_TCP_PORT,
+        username: str = DEFAULT_TXTRADER_USERNAME,
+        password: str = DEFAULT_TXTRADER_PASSWORD,
         options: dict = {},
         callbacks: dict = {},
         log_level: str = 'WARNING',
@@ -218,7 +223,13 @@ class Monitor(object):
         return True
 
     def send(self, command):
-        self.connection.send(command)
+        if self.connection:
+            self.connection.send(command)
+            ret = True
+        else:
+            logging.error(f'send: failed; connection state is {self.connection_state}')
+            ret = False
+        return ret
 
     def signal_handler(self, sig, frame):
         signame = Signals(sig).name
@@ -229,7 +240,7 @@ class Monitor(object):
         self.stop()
 
     def set_handler(self, handler):
-        for s in [SIGINT, SIGHUP, SIGQUIT, SIGTERM]:
+        for s in [SIGINT, SIGQUIT, SIGTERM]:
             signal(s, handler)
 
     def run(self):
@@ -374,10 +385,10 @@ class StatusClientFactory(ReconnectingClientFactory):
 
 
 @click.command('txtrader_monitor', short_help='monitor txtrader update channel')
-@click.option('-h', '--host', default='localhost', envvar='TXTRADER_HOST')
-@click.option('-p', '--port', type=int, default=50090, envvar='TXTRADER_TCP_PORT')
-@click.option('-u', '--username', default='txtrader_user', envvar='TXTRADER_USERNAME')
-@click.option('-P', '--password', default='change_this_password', envvar='TXTRADER_PASSWORD')
+@click.option('-h', '--host', default=DEFAULT_TXTRADER_HOST, envvar='TXTRADER_HOST')
+@click.option('-p', '--port', type=int, default=DEFAULT_TXTRADER_TCP_PORT, envvar='TXTRADER_TCP_PORT')
+@click.option('-u', '--username', default=DEFAULT_TXTRADER_USERNAME, envvar='TXTRADER_USERNAME')
+@click.option('-P', '--password', default=DEFAULT_TXTRADER_PASSWORD, envvar='TXTRADER_PASSWORD')
 @click.option(
     '--options', type=str, default='{"order-notification":1,"execution-notification":1}', envvar='TXTRADER_OPTIONS'
 )
