@@ -227,7 +227,7 @@ class Monitor(object):
             self.connection.send(command)
             ret = True
         else:
-            logging.error(f'send: failed; connection state is {self.connection_state}')
+            logging.error(f'send failed; connection state is {self.connection_state.name}')
             ret = False
         return ret
 
