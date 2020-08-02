@@ -40,10 +40,10 @@ class Monitor(object):
 
     def __init__(
         self,
-        host: str = '',
-        port: str = '',
-        username: str = '',
-        password: str = '',
+        host: str = 'localhost',
+        port: str = '50090',
+        username: str = 'txtrader_user',
+        password: str = 'change_this_password',
         options: dict = {},
         callbacks: dict = {},
         log_level: str = 'WARNING',
