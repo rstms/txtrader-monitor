@@ -6,14 +6,14 @@ from pprint import pprint
 
 from txtrader_monitor import Monitor
 
-m = Monitor(log_level='WARNING')
+m = Monitor(log_level='INFO')
 
 ex = None
 
 
 def _executions(channel, data):
     global ex
-    #print(f'{channel}: {data}')
+    print(f'{channel} received data: type={type(data)} len={len(data)}')
     ex = (json.loads(data))
     return False
 
@@ -31,4 +31,5 @@ def test_run_query_executions():
     m.set_callback('EXECUTIONS', _executions)
     m.run()
     assert ex != None
-    pprint(ex)
+    assert type(ex) == dict
+    print(f'received {len(ex)} executions')

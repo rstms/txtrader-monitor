@@ -1,8 +1,9 @@
 from txtrader_monitor import Monitor
 import json
 from pprint import pprint
+import os
 
-m = Monitor()
+m = Monitor(log_level=os.environ.get('TXTRADER_LOG_LEVEL', 'WARNING'))
 
 
 def status(channel, data):

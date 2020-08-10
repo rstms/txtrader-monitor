@@ -33,6 +33,9 @@ from txtrader_monitor.version import VERSION
 from txtrader_monitor.channel import ALL_CHANNELS, Channel
 from txtrader_monitor.connection_state import ConnectionState
 
+# 512MB line buffer
+LINE_BUFFER_LENGTH = 0x20000000
+
 CHANNELS = ALL_CHANNELS
 
 DEFAULT_TXTRADER_HOST = 'localhost'
@@ -64,7 +67,6 @@ class Monitor(object):
             by default, all callbacks will print to stdout; to override this, pass callbacks={}
           log_level: select filter for log: 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'
         """
-
         logging.basicConfig(
             stream=sys.stderr,
             level=log_level,
@@ -259,10 +261,11 @@ class Monitor(object):
 
 
 class StatusClient(NetstringReceiver):
-    # set 256MB line buffer                                                                                                                                       MAX_LENGTH = 0x10000000
+
+    MAX_LENGTH = LINE_BUFFER_LENGTH
+
     def __init__(self, controller):
         logging.info(f'{self} __init__({hex(id(controller))})')
-        self.MAX_LENGTH = 0x1000000
         self.channel = ''
         self.message_types = []
         self.channel_map = {}
