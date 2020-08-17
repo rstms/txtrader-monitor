@@ -48,10 +48,10 @@ class Monitor(object):
 
     def __init__(
         self,
-        host: str = DEFAULT_TXTRADER_HOST,
-        port: int = DEFAULT_TXTRADER_TCP_PORT,
-        username: str = DEFAULT_TXTRADER_USERNAME,
-        password: str = DEFAULT_TXTRADER_PASSWORD,
+        host: str = None,
+        port: int = None,
+        username: str = None,
+        password: str = None,
         options: dict = {},
         callbacks: dict = {},
         log_level: str = 'WARNING',
@@ -79,10 +79,10 @@ class Monitor(object):
         if not isinstance(options, dict):
             raise ValueError(f'options: expected dict type, got {type(options)}')
 
-        self.host = host or os.environ['TXTRADER_HOST']
-        self.port = int(port or os.environ['TXTRADER_TCP_PORT'])
-        self.username = username or os.environ['TXTRADER_USERNAME']
-        self.password = password or os.environ['TXTRADER_PASSWORD']
+        self.host = host or os.environ.get('TXTRADER_HOST', DEFAULT_TXTRADER_HOST)
+        self.port = int(port or os.environ.get('TXTRADER_TCP_PORT', DEFAULT_TXTRADER_TCP_PORT))
+        self.username = username or os.environ.get('TXTRADER_USERNAME', DEFAULT_TXTRADER_USERNAME)
+        self.password = password or os.environ.get('TXTRADER_PASSWORD', DEFAULT_TXTRADER_PASSWORD)
 
         self.options = options
 
