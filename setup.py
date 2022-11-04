@@ -31,7 +31,7 @@ setup(
         "Environment :: Console",
     ],
     python_requires='>=3.7',
-    install_requires=['twisted==20.3.0', 'click==7.1.2', 'ujson==3.1.0'],
+    install_requires=['twisted==22.10.0', 'click==7.1.2', 'ujson==3.1.0'],
     tests_require=['pytest', 'tox', 'yapf', 'twine', 'wheel', 'pybump'],
     entry_points={
         'console_scripts': ['txtrader_monitor=txtrader_monitor:txtrader_monitor', ],
